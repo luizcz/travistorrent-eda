@@ -1,5 +1,5 @@
 ---
-title: "EDA dos projetos"
+title: "Projeto travis"
 output:
   html_document:
     df_print: paged
@@ -44,155 +44,128 @@ Para começarmos a entender a variação dos dados primeiramente devemos ver com
 projetos %>% 
     ggplot(aes(x = lang, 
                y = sloc_end)) + 
-    geom_jitter(alpha = .4, width = .4, size = .5) +
+    geom_jitter(alpha = .5, width = .4, size = .8, color="cyan3") +
     scale_y_log10()
 ```
-Podemos observar a variação no tamanho do projeto porém não podemos afirmar muita coisa com certeza pois as linguagens tem números diferentes de projetos. Para termos uma melhor referência podemos utilizar um boxplot por ser um gráfico mais adequado para a comparação pois o tamanho da caixa do bloxplot não é influenciado pela quantidade de pontos. O tamanho da caixa mostra para a gente a variação dos tamanhos do projeto que é o que queremos chegar a uma conclusão.
+
+
+Podemos observar a variação no tamanho do projeto porém não podemos afirmar muita coisa com certeza pois as linguagens tem números diferentes de projetos. Uma medida que pode ser utilizada é a diferença entre os estremos, porém essa métrica é muito afetada por pontos extremos. Para termos uma melhor referência podemos utilizar um boxplot por ser um gráfico mais adequado para a comparação pois o tamanho da caixa do bloxplot não é influenciado pela quantidade de pontos e nem pelos extremos. O tamanho da caixa mostra para a gente a variação dos tamanhos do projeto que é o que queremos chegar a uma conclusão.
 ```{r}
 projetos %>% 
     ggplot(aes(x= lang, 
                y = sloc_end)) + 
     geom_boxplot(width = .25)+
-    geom_jitter(alpha = .1, width = .2, size = .8, color="cyan3") +
-    scale_y_log10()
+    geom_jitter(alpha = .2, width = .2, size = .8, color="cyan3") 
 ```
 
+
+Para vermos a real diferença entre o tamanho podemos calcular o tamanho da caixa, conhecido por distância interquartil.
+Para java temos:
 ```{r}
-projetos %>% 
-    ggplot(aes(x = "um label", 
-               y = build_success_prop)) + 
-    geom_jitter(alpha = .4, width = .2, size = .8) 
+ projetos %>%
+    filter(lang=="java")%>%
+    select(sloc_end)%>%
+    unlist()%>%
+    as.numeric()%>%
+    IQR()
 ```
-
-
+Para Ruby temos:
 ```{r}
-projetos %>% 
-    ggplot(aes(x = team)) + 
-    geom_histogram(binwidth = 10, fill = "white", color = "blue") + 
-    geom_rug(alpha = .5)
-
-projetos %>% 
-    ggplot(aes(x = build_success_prop)) + 
-    geom_histogram(binwidth = .1, fill = "white", color = "red") + 
-    geom_rug(alpha = .3)
+ projetos %>%
+    filter(lang=="ruby")%>%
+    select(sloc_end)%>%
+    unlist()%>%
+    as.numeric()%>%
+    IQR()
 ```
 
-```{r}
-projetos %>% 
-    ggplot(aes(x = team)) + 
-    stat_ecdf()
-```
+A conclusão que podemos chegar é que a diferença de variação em tamanhos de projetos em java e em ruby é consideravel, na minha opinião ruby tem uma variação menor pois seu maior uso é para criação de projetos web que normalmente tem uma estrutura básica parecida. Já a linguagem Java tem projetos que vão desde apenas uma classe até projetos grandes e complexos.
 
-```{r}
-projetos %>% 
-    ggplot(aes(x= lang, 
-               y = build_success_prop)) + 
-    geom_boxplot(width = .25)
-
-projetos %>% 
-    ggplot(aes(x= build_success_prop)) + 
-    geom_histogram(bins = 10) + 
-    facet_grid(lang ~ .)
-
-projetos %>% 
-    ggplot(aes(x= build_success_prop, color = lang)) + 
-    stat_ecdf() 
-
-```
-
-```{r}
-projetos %>% 
-    ggplot(aes(x = build_success_prop, color = lang)) + 
-    geom_density()
-```
-
-```{r}
-projetos %>% 
-    ggplot(aes(y = build_success_prop, 
-               x = lang)) + 
-    geom_violin() + 
-    geom_jitter(width = .1, alpha = .1)
-```
-
-
-1 nominal x 1 numérica
-
-```{r}
-projetos %>% 
-    ggplot(aes(x = lang, y = team)) + 
-    geom_jitter(alpha = .4, width = .2, size = .8) 
-```
-
-Transformação de log na escala da variável team:
-
-```{r}
-projetos %>% 
-    ggplot(aes(x = lang, y = team)) + 
-    geom_jitter(alpha = .4, width = .2, size = .8) + 
-    scale_y_log10()
-```
-
-O que é a transformação de log
-
-```{r}
-escalas = tibble(x = 10**(1:20), 
-                 escala_linear = x, 
-                 escala_log = log10(x))
-
-escalas
-```
-
-
-### Histogramas e density plots
-
-```{r}
-projetos %>% 
-    ggplot(aes(x = sloc_end)) + 
-    geom_histogram(bins = 20, fill = "white", color = "blue") + 
-    facet_grid(lang ~ .) +
-    scale_x_log10()
-```
-
-Density
-
-Rugs
-
-ECDFs
-
-Boxplots
-
-Violin
-
+## Outro questionamento
+Uma vez respondida essa questão podemos chegar a outro questionamento. Qual a variação do tempo de projeto para cada uma das linguagens?
 
 ```{r}
 projetos %>% 
     ggplot(aes(x = activity_period)) + 
-    geom_histogram(bins = 10, fill = "white", color = "blue") + 
-    geom_rug(alpha = .3) + 
-    facet_grid(lang ~ .) 
+    geom_histogram(binwidth = .1, fill="cyan3", color="cyan3")+
+    facet_grid(lang ~.)
 ```
 
 
+Aparentemente, java tem projetos com menor duração do que ruby. Para vermos a variação assim como no exemplo anterior vamos utilizar o boxplot.
 
 ```{r}
 projetos %>% 
-    ggplot(aes(x = sloc_end, color = lang)) + 
-    stat_ecdf() + 
-    scale_x_log10()
+    ggplot(aes(x= lang, 
+               y = activity_period)) + 
+    geom_boxplot(width = .25)+
+    geom_jitter(alpha = .2, width = .2, size = .8, color="cyan3") 
 ```
+
+
+Podemos ver o resultado dessa variação utilizando a distância interquartil.
+Para java temos:
+```{r}
+ projetos %>%
+    filter(lang=="java")%>%
+    select(activity_period)%>%
+    unlist()%>%
+    as.numeric()%>%
+    IQR()
+```
+Para Ruby temos:
+```{r}
+ projetos %>%
+    filter(lang=="ruby")%>%
+    select(activity_period)%>%
+    unlist()%>%
+    as.numeric()%>%
+    IQR()
+```
+
+Diferentemente da variação de tamanho de projetos, a diferença entre a variação de tempo de projeto é bem pequena.
+
+##Projetos com mais linhas de código são os que tem mais commits?
+
+Primeiramente vamos gerar um gráfico para ver o comportamento do mesmo.
 
 ```{r}
 projetos %>% 
-    ggplot(aes(x = build_success_prop)) + 
-    geom_density()
+    ggplot(aes(x = sloc_end, 
+               y = commits_per_month)) + 
+    geom_point(alpha = .3, color="cyan3") + 
+    scale_x_log10() + 
+    scale_y_log10()+
+    geom_smooth(method = "lm", se = FALSE)
+
 ```
+
+Aplicando uma escala logarítmica vemos que aparentemente as duas coisas crescem juntas mas para chegarmos a essa conclusão precisaremos utilizar outros métodos para termos essa certeza. A linha azul tem o "best fit" para os dados onde é minimizado o erro da distância entre os pontos e a reta.
+
+```{r}
+projetos %>% 
+   summarise(correlacao = cor(commits_per_month, sloc_end, method = "pearson"))
+
+```
+Como podemos ver mesmo parecendo que crescem juntas a correlação entre as duas é desprezível, então se existir alguma relação entre as variáveis, essa relação não é linear.
+## Outro questionamento
+Dado que o número de linha não tem uma relação linear com o número de commits, existe alguma relação linear entre o número de commits e o número de programadores no time?
 
 ```{r}
 projetos %>% 
     ggplot(aes(x = team, 
                y = commits_per_month)) + 
-    geom_point(alpha = .3) + 
-    scale_x_log10() + 
-    scale_y_log10()
+    geom_point(alpha = .3, color="cyan3") + 
+    geom_smooth(method = "lm", se = FALSE)
+
 ```
 
+
+Outra vez o gráfico nos mostra que a linha que seria o "best fit" de uma regressão linear é crescente. Vamos verificar se realmente existe essa correlação.
+
+```{r}
+projetos %>% 
+   summarise(correlacao = cor(commits_per_month, team, method = "pearson"))
+
+```
+O valor de 0,5 indica uma correlação positiva entre as variáveis, no caso crescem juntas, moderada. Isso faz sentido pois quanto mais gente trabalhando num projeto maior deve ser a frequencia de commits para que todos estejam no mesmo nível de entendimento.
