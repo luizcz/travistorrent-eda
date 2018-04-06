@@ -49,7 +49,7 @@ projetos %>%
 ```
 
 
-Podemos observar a variação no tamanho do projeto porém não podemos afirmar muita coisa com certeza pois as linguagens tem números diferentes de projetos. Uma medida que pode ser utilizada é a diferença entre os estremos, porém essa métrica é muito afetada por pontos extremos. Para termos uma melhor referência podemos utilizar um boxplot por ser um gráfico mais adequado para a comparação pois o tamanho da caixa do bloxplot não é influenciado pela quantidade de pontos e nem pelos extremos. O tamanho da caixa mostra para a gente a variação dos tamanhos do projeto que é o que queremos chegar a uma conclusão.
+Podemos observar a variação no tamanho do projeto porém não podemos afirmar muita coisa com certeza pois as linguagens tem números diferentes de projetos. Uma medida que pode ser utilizada é a diferença entre os pontos máximo e mínimo, porém essa métrica é muito afetada por esses pontos e pode não ser representativo. Para termos uma melhor referência podemos utilizar um boxplot por ser um gráfico mais adequado para a comparação pois o tamanho da caixa do bloxplot não é influenciado pela quantidade de pontos e nem pelos extremos. O tamanho da caixa mostra para a gente a variação dos tamanhos do projeto que é o que queremos chegar a uma conclusão.
 ```{r}
 projetos %>% 
     ggplot(aes(x= lang, 
@@ -80,6 +80,7 @@ Para Ruby temos:
 ```
 
 A conclusão que podemos chegar é que a diferença de variação em tamanhos de projetos em java e em ruby é consideravel, na minha opinião ruby tem uma variação menor pois seu maior uso é para criação de projetos web que normalmente tem uma estrutura básica parecida. Já a linguagem Java tem projetos que vão desde apenas uma classe até projetos grandes e complexos.
+
 
 ## Outro questionamento
 Uma vez respondida essa questão podemos chegar a outro questionamento. Qual a variação do tempo de projeto para cada uma das linguagens?
@@ -148,7 +149,9 @@ projetos %>%
 
 ```
 Como podemos ver mesmo parecendo que crescem juntas a correlação entre as duas é desprezível, então se existir alguma relação entre as variáveis, essa relação não é linear.
+
 ## Outro questionamento
+
 Dado que o número de linha não tem uma relação linear com o número de commits, existe alguma relação linear entre o número de commits e o número de programadores no time?
 
 ```{r}
