@@ -11,6 +11,7 @@ output:
 library(tidyverse)
 library(here)
 library(knitr)
+library(ggExtra)
 theme_set(theme_bw())
 ```
 ## Lendo os dados
@@ -33,7 +34,8 @@ projetos = projetos %>%
 
 Nesta parte do laboratório, o objetivo é experimentar com diferentes formas de codificar variáveis em marcas e canais. Para isso, você deve escolher um conjunto de 4 variáveis dos dados que você usou para o lab 1, escolher uma ou mais características que você gostaria de explorar em uma ou mais dessas variáveis (considerando as demais), e produzir 6 visualizações diferentes com as mesmas variáveis codificadas de diferentes maneiras. Um exemplo de característica que você pode querer explorar é a distribuição da variável X para as duas linguagens de programação, ou se há uma associação entre X e Y. Em ambos os casos, a visualização mostrará contudo as 4 variáveis, para que seja possível ao leitor entender sua análise levando em conta essas outras dimensões também.
 
-Suas visualizações devem usar ao menos 2 tipos de marcas diferentes (pontos, barras, linhas, áreas, ...), no total. 
+Suas visualizações devem usar ao menos 2 tipos de marcas diferentes (pontos, barras, linhas, 
+, ...), no total. 
 
 O resultado desta parte do laboratório é um relatório com a descrição de quais variáveis estão sendo utilizadas, qual a característica ou pergunta que você está explorando, mostrando as 6 visualizações e explicando qual delas é a mais eficaz em permitir a análise que você escolheu. Use o conceito de eficácia de diferentes canais para embasar sua resposta.
 
@@ -55,4 +57,30 @@ projetos %>%
     facet_grid(lang ~.) 
 
 ```
-    
+
+```{r}
+projetos %>% 
+    ggplot(aes(x = lang, 
+               y = commits_per_month, colour=activity_period, size=sloc_end)) + 
+    geom_point(alpha = .3) 
+
+```
+
+```{r}
+projetos %>% 
+    ggplot(aes(x = sloc_end, 
+               y = commits_per_month, shape=lang, colour=lang, size=activity_period)) + 
+    geom_point(alpha = .3) 
+
+```
+
+
+```{r}
+g<- projetos %>% 
+    ggplot(aes(x = sloc_end, 
+               y = commits_per_month, shape=lang, colour=lang, size=activity_period)) + 
+    geom_point(alpha = .3) 
+ggMarginal(g, type = "boxplot", fill="transparent")
+g
+
+```
