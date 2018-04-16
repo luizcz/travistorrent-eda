@@ -39,21 +39,22 @@ Suas visualizações devem usar ao menos 2 tipos de marcas diferentes (pontos, b
 
 O resultado desta parte do laboratório é um relatório com a descrição de quais variáveis estão sendo utilizadas, qual a característica ou pergunta que você está explorando, mostrando as 6 visualizações e explicando qual delas é a mais eficaz em permitir a análise que você escolheu. Use o conceito de eficácia de diferentes canais para embasar sua resposta.
 
-##Projetos com mais linhas de código são os que tem mais commits?
+##Projetos com maior tamanho de time são os que tem mais commits?
 
 
 ```{r}
 projetos %>% 
-    ggplot(aes(x = sloc_end, 
+    ggplot(aes(x = team, 
                y = commits_per_month, colour=lang, size=activity_period)) + 
-    geom_point(alpha = .3) 
+    geom_point(alpha = .3) + geom_smooth(method="lm")
 
 ```
 ```{r}
 projetos %>% 
-    ggplot(aes(x = sloc_end, 
+    ggplot(aes(x = team, 
                y = commits_per_month, size=activity_period)) + 
-    geom_point(alpha = .3, colour="cyan3")+
+    geom_point(alpha = .3, colour="cyan3")+ 
+    geom_smooth(method="loess")+
     facet_grid(lang ~.) 
 
 ```
@@ -61,15 +62,29 @@ projetos %>%
 ```{r}
 projetos %>% 
     ggplot(aes(x = lang, 
-               y = commits_per_month, colour=activity_period, size=sloc_end)) + 
+               y =team , colour=activity_period, size=commits_per_month)) + 
+    #geom_jitter(alpha = .5, width = .4) 
     geom_point(alpha = .3) 
 
 ```
 
 ```{r}
 projetos %>% 
-    ggplot(aes(x = sloc_end, 
-               y = commits_per_month, shape=lang, colour=lang, size=activity_period)) + 
+    ggplot(aes(x = lang, 
+               y =commits_per_month , colour=activity_period, size=team)) + 
+    scale_y_log10()+
+    geom_jitter(alpha = .5, width = .4) 
+    #geom_point(alpha = .3) 
+
+```
+
+
+```{r}
+projetos %>% 
+    ggplot(aes(x = activity_period, 
+               y = commits_per_month, shape=lang, colour=lang, size=team)) + 
+    scale_x_log10()+
+    scale_y_log10()+
     geom_point(alpha = .3) 
 
 ```
@@ -77,10 +92,27 @@ projetos %>%
 
 ```{r}
 g<- projetos %>% 
-    ggplot(aes(x = sloc_end, 
+    ggplot(aes(x = team, 
                y = commits_per_month, shape=lang, colour=lang, size=activity_period)) + 
-    geom_point(alpha = .3) 
+    geom_point(alpha = .3) +
+    geom_smooth(method="lm")
 ggMarginal(g, type = "boxplot", fill="transparent")
 g
 
 ```
+
+```{r}
+projetos %>% 
+   summarise(correlacao = cor(commits_per_month, team, method = "pearson"))
+
+projetos %>% 
+   filter(lang=="java")%>%
+   summarise(correlacao = cor(commits_per_month, team, method = "pearson"))
+
+projetos %>% 
+   filter(lang=="ruby")%>%
+   summarise(correlacao = cor(commits_per_month, team, method = "pearson"))
+
+```
+
+Na minha opinião os gráficos que são melhores de ver os resultados são o primeiro e o terceiro. No primeiro conseguimos ver a tendência das retas e ver que Ruby tem uma correlação maior que Java. No terceiro gráfico, quanto maior a correlação mais visível fica, porém, é facilmente afetado por um ponto fora da curva.
